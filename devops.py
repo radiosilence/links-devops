@@ -61,6 +61,11 @@ def run_mysql(command):
     ))
 
 
+def manage(command):
+    with virtualenv:
+        run('python manage.py {command}'.format(command=command))
+
+
 def setup_database_mysql():
     user = "'{env.repo}_{env.instance}'@'localhost'".format(env=env)
     db = '{env.repo}_{env.instance}'.format(env=env)
