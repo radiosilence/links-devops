@@ -37,7 +37,7 @@ def _init(instance):
     env.directory = u'/srv/{env.repo}/{env.instance}'.format(env=env)
     env.virtualenv = u'/env/{env.repo}/{env.instance}'.format(env=env)
     env.activate = u'source {env.virtualenv}/bin/activate'.format(env=env)
-
+    env.uwsgi_ini = u'{env.directory}/uwsgi.ini'.format(env=env)
 
 def generate_vars():
     variables = {
@@ -59,6 +59,10 @@ def run_mysql(command):
     run('echo "{command}" | mysql -u {env.db_user} -p{env.db_password} '.format(env=env,
         command=command
     ))
+
+
+def restart(command):
+    run('touch {env.uwsgi_ini}').format(env=env)
 
 
 def manage(command):
