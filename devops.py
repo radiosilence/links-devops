@@ -42,7 +42,7 @@ def _init(instance):
 
 def generate_vars():
     variables = {
-        'DJANGO_SETTINGS_MODULE': u'{env.app}.settings.production'.format(env=env),
+        'DJANGO_SETTINGS_MODULE': u'{env.app}.settings.development'.format(env=env),
         'DJANGO_DB_PASSWORD': env.secrets['db'],
         'DJANGO_SECRET_KEY': env.secrets['key'],
     }
