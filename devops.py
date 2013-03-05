@@ -3,6 +3,7 @@ from __future__ import with_statement
 import os
 import random
 import string
+import pipes
 
 from contextlib import contextmanager
 from fabric.api import *
@@ -28,7 +29,7 @@ def virtualenv():
 @contextmanager
 def shell_env(**env_vars):
     orig_shell = env['shell']
-    env_vars_str = ' '.join('{0}={1}'.format(key, value)
+    env_vars_str = ' '.join('{0}={1}'.format(key, pipes.quote(value))
                            for key, value in env_vars.items())
     env['shell']='{0} {1}'.format(env_vars_str, orig_shell)
     yield
@@ -86,8 +87,9 @@ def restart(command):
 def manage(command):
     with virtualenv():
         with shell_env(**generate_vars()):
-            run('python manage.py {command}'.format(
-                command=command
+            run('python manage.py {command} --settings={settings}'.format(
+                command=command,
+                settings=generate_vars()['DJANGO_SETTINGS_MODULE'],
             ))
 
 
