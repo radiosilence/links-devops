@@ -115,7 +115,7 @@ def setup_database():
 
 def initialise(instance):
     _init(instance)
-    if not confirm("Initialising a site will CHANGE THE DATABASE PASSWORD/SECRET KEY. Are you SURE you wish to continue?"):
+    if not confirm("Initialising a site will CHANGE THE DATABASE PASSWORD/SECRET KEY. Are you SURE you wish to continue?", default=False):
         exit()
 
     env.secrets = {
