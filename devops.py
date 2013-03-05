@@ -93,6 +93,13 @@ def manage(command):
             ))
 
 
+def create_var_file():
+    with cd(env.virtualenv):
+        run('echo > bin/vars')
+        for k, v in generate_vars().items():
+            run('echo \'export {0}={1}\' >> bin/vars'.format(k, pipes.quote(v)))
+
+
 def setup_database_mysql():
     user = "'{env.repo}_{env.instance}'@'localhost'".format(env=env)
     db = '{env.repo}_{env.instance}'.format(env=env)
@@ -118,6 +125,7 @@ def initialise(instance):
         'key': _random(64),
     }
     setup_database()
+    create_var_file()
     run(u'mkdir -p {env.virtualenv}'.format(env=env))
     run(u'virtualenv {env.virtualenv}'.format(env=env))
     run(u'mkdir -p {}'.format(env.directory))
