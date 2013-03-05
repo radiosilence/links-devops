@@ -15,6 +15,7 @@ env.db_user = os.environ.get('DB_USER') or 'root'
 env.db_password = os.environ.get('DB_PASSWORD')
 env.db_host = os.environ.get('DB_HOST') or 'localhost'
 
+
 def _random(length=16):
     return ''.join([random.choice(string.digits + string.letters + u'!-_:;.,^&')
                     for i
@@ -24,16 +25,8 @@ def _random(length=16):
 def virtualenv():
     with cd(env.directory):
         with prefix(env.activate):
-            yield
-
-@contextmanager
-def shell_env(**env_vars):
-    orig_shell = env['shell']
-    env_vars_str = ' '.join('{0}={1}'.format(key, pipes.quote(value))
-                           for key, value in env_vars.items())
-    env['shell']='{0} {1}'.format(env_vars_str, orig_shell)
-    yield
-    env['shell']= orig_shell
+            with prefix(env.source_vars):
+                yield
 
 
 def _init(instance):
@@ -49,7 +42,9 @@ def _init(instance):
     env.directory = u'/srv/{env.repo}/{env.instance}'.format(env=env)
     env.virtualenv = u'/env/{env.repo}/{env.instance}'.format(env=env)
     env.activate = u'source {env.virtualenv}/bin/activate'.format(env=env)
+    env.source_vars = u'source {env.virtualenv}/bin/vars'.format(env=env)
     env.uwsgi_ini = u'{env.directory}/uwsgi.ini'.format(env=env)
+
 
 def generate_vars():
     variables = {
@@ -86,11 +81,10 @@ def restart(command):
 
 def manage(command):
     with virtualenv():
-        with shell_env(**generate_vars()):
-            run('python manage.py {command} --settings={settings}'.format(
-                command=command,
-                settings=generate_vars()['DJANGO_SETTINGS_MODULE'],
-            ))
+        run('python manage.py {command} --settings={settings}'.format(
+            command=command,
+            settings=generate_vars()['DJANGO_SETTINGS_MODULE'],
+        ))
 
 
 def create_var_file():
