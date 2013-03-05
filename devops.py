@@ -13,12 +13,6 @@ env.db_adapter = 'mysql'
 env.db_user = os.environ.get('DB_USER')
 env.db_password = os.environ.get('DB_PASSWORD')
 
-env.callbacks = {
-    'upgrade': lambda: None,
-    'initialise': lambda: None,
-}
-
-
 def _random(length=16):
     return ''.join([random.choice(string.digits + string.letters + u'!-_:;.,^&')
                     for i
@@ -105,7 +99,6 @@ def initialise(instance):
 
     with virtualenv():
         run('pip install -r requirements.txt')
-        env.callbacks['initialise']()
 
     for k, v in generate_vars().items():
         print '{0}: "{1}"'.format(k, v.replace('"', '\"'))
@@ -120,4 +113,3 @@ def upgrade(instance):
 
     with virtualenv():
         run('git pull --rebase')
-        env.callbacks['upgrade']()
