@@ -8,7 +8,8 @@ import pipes
 from contextlib import contextmanager
 from fabric.api import *
 from fabric.contrib.console import confirm
-from fabric.colors import green
+from fabric.contrib.files import exists
+from fabric.colors import green, red
 from fabric.decorators import with_settings
 
 
@@ -101,7 +102,7 @@ def create_var_file():
 def setup_database_mysql():
     user = "'{env.repo}_{env.instance}'@'localhost'".format(env=env)
     db = '{env.repo}_{env.instance}'.format(env=env)
-    
+
     run_mysql('CREATE DATABASE IF NOT EXISTS {db};'.format(db=db))
     run_mysql('DROP USER {user}'.format(user=user))
     run_mysql("CREATE USER {user} IDENTIFIED BY '{password}';".format(
@@ -118,7 +119,7 @@ def setup_database():
 
 def initialise(instance):
     _init(instance)
-    if not confirm("Initialising a site will CHANGE THE DATABASE PASSWORD/SECRET KEY. Are you SURE you wish to continue?", default=False):
+    if not confirm(red('Initialising a site will CHANGE THE DATABASE PASSWORD/SECRET KEY. Are you SURE you wish to continue?'), default=False):
         exit()
 
     env.secrets = {
@@ -128,7 +129,10 @@ def initialise(instance):
     setup_database()
     create_var_file()
     run(u'mkdir -p {env.virtualenv}'.format(env=env))
-    run(u'virtualenv {env.virtualenv}'.format(env=env))
+    if not exists(env.activate):
+        run(u'virtualenv {env.virtualenv}'.format(env=env))
+        with virtualenv():
+            run('pip install \'distribute>=0.6.3\'')
     run(u'mkdir -p {}'.format(env.directory))
     with cd(env.directory):
         with settings(warn_only=True):
@@ -139,7 +143,6 @@ def initialise(instance):
                 run('git pull --rebase')
 
     with virtualenv():
-        run('pip install \'distribute>=0.6.35\'')
         run('pip install -r requirements.txt')
 
     for k, v in generate_vars().items():
