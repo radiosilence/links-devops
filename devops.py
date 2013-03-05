@@ -10,8 +10,9 @@ from fabric.api import *
 env.user = 'wsgi'
 env.hosts = ['linkscreative.co.uk:22734']
 env.db_adapter = 'mysql'
-env.db_user = os.environ.get('DB_USER')
+env.db_user = os.environ.get('DB_USER') or 'root'
 env.db_password = os.environ.get('DB_PASSWORD')
+env.db_host = os.environ.get('DB_HOST') or 'localhost'
 
 def _random(length=16):
     return ''.join([random.choice(string.digits + string.letters + u'!-_:;.,^&')
@@ -56,6 +57,13 @@ def install_requirements():
 
 
 def run_mysql(command):
+    if not env.db_user:
+        raise Exception('Control DB user not set!')
+    if not env.db_password:
+        raise Exception('Control DB password not set!')
+    if not env.db_host:
+        raise Exception('Control DB host not set!')
+
     run('echo "{command}" | mysql -u {env.db_user} -p{env.db_password} '.format(env=env,
         command=command
     ))
