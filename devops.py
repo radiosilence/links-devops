@@ -152,4 +152,4 @@ def upgrade(instance):
 
     with virtualenv():
         run('git pull --rebase')
-        run('pip install requirements.txt')
+        run('pip install -r requirements.txt')
