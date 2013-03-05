@@ -4,6 +4,9 @@ import os
 import random
 import string
 import pipes
+from tempfile import NamedTemporaryFile
+
+from servers.servers import generate_config
 
 from contextlib import contextmanager
 from fabric.api import *
@@ -51,7 +54,7 @@ def _init(instance):
     env.uwsgi_ini = u'{env.directory}/uwsgi.ini'.format(env=env)
 
 
-def generate_vars():
+def generate_envvars():
     variables = {
         'DJANGO_SETTINGS_MODULE': u'{env.app}.settings.production'.format(env=env),
         'DJANGO_DB_PASSWORD': env.secrets['db'],
@@ -59,7 +62,7 @@ def generate_vars():
     }
     if env.instance == 'test':
         variables['DJANGO_SETTINGS_MODULE'] = u'{env.app}.settings.development'.format(env=env)
-    return variables
+    env.envvars = variables
     
 
 
@@ -95,7 +98,7 @@ def manage(command):
 def create_var_file():
     with cd(env.virtualenv):
         run('echo > bin/vars')
-        for k, v in generate_vars().items():
+        for k, v in env.envvars.items():
             run('echo "export {0}={1}" >> bin/vars'.format(k, pipes.quote(v)))
 
 
@@ -126,6 +129,7 @@ def initialise(instance):
         'db': _random(),
         'key': _random(64),
     }
+    generate_envvars()
     setup_database()
     create_var_file()
     run(u'mkdir -p {env.virtualenv}'.format(env=env))
@@ -145,7 +149,31 @@ def initialise(instance):
     with virtualenv():
         run('pip install -r requirements.txt')
 
-    for k, v in generate_vars().items():
+    if not hasattr(env, 'domains'):
+        raise Exception('Need some domains!')
+
+    env.site = {
+        'instances': {
+            'name': env.instance,
+            'domains': env.domains,
+        },
+        'configs': [
+            {
+                'type': 'nginx',
+                'application': 'django',
+            },
+            {
+                'type': 'uwsgi',
+                'application': 'django',
+                'env': env.envvars
+            }
+        ],
+    }
+
+    conf_nginx()
+    conf_uwsgi()
+
+    for k, v in env.envvars.items():
         print(green('{0}: "{1}"'.format(k, v.replace('"', '\"'))))
     
 
@@ -160,3 +188,34 @@ def upgrade(instance):
     with virtualenv():
         run('git pull --rebase')
         run('pip install -r requirements.txt')
+
+
+def conf_nginx():
+    f = NamedTemporaryFile('w', delete=False)
+    f.write(generate_config(
+        env.repo,
+        env.site,
+        env.instance,
+        filter(lambda x: x['type'] == 'nginx', env.site['configs'])[0],
+        '.conf',
+    ))
+    f.close()
+    with virtualenv():
+        put(f.name, 'nginx.conf')
+    os.unlink(f.name)
+
+def conf_uwsgi():
+    f = NamedTemporaryFile('w', delete=False)
+    f.write(generate_config(
+        env.repo,
+        env.site,
+        env.instance,
+        filter(lambda x: x['type'] == 'uwsgi', env.site['configs'])[0],
+        '.ini',
+    ))
+    f.close()
+    with virtualenv():
+        put(f.name, 'uwsgi.ini')
+    os.unlink(f.name)
+
+

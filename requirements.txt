@@ -1,1 +1,2 @@
 Fabric>=1.6.0
+servers.py>=0.1.1
