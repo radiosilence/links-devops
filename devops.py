@@ -130,6 +130,7 @@ def initialise(instance):
                 run('git pull --rebase')
 
     with virtualenv():
+        run('pip install distribute -U')
         run('pip install -r requirements.txt')
 
     for k, v in generate_vars().items():
