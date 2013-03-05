@@ -120,7 +120,7 @@ def setup_database():
         setup_database_mysql()
 
 
-def initialise(instance):
+def initialise(instance, application='static'):
     _init(instance)
     if not confirm(red('Initialising a site will CHANGE THE DATABASE PASSWORD/SECRET KEY. Are you SURE you wish to continue?'), default=False):
         exit()
@@ -160,18 +160,18 @@ def initialise(instance):
         'configs': [
             {
                 'type': 'nginx',
-                'application': 'django',
-            },
-            {
-                'type': 'uwsgi',
-                'application': 'django',
-                'env': env.envvars
+                'application': application,
             }
         ],
     }
-
     conf_nginx()
-    conf_uwsgi()
+    if application == 'django':
+        env.site['configs'].append({
+            'type': 'uwsgi',
+            'application': 'django',
+            'env': env.envvars
+        })
+        conf_uwsgi()
 
     for k, v in env.envvars.items():
         print(green('{0}: "{1}"'.format(k, v.replace('"', '\"'))))
