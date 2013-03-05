@@ -25,6 +25,16 @@ def virtualenv():
         with prefix(env.activate):
             yield
 
+@contextmanager
+def shell_env(**env_vars):
+    orig_shell = env['shell']
+    env_vars_str = ' '.join('{0}={1}'.format(key, value)
+                           for key, value in env_vars.items())
+    env['shell']='{0} {1}'.format(env_vars_str, orig_shell)
+    yield
+    env['shell']= orig_shell
+
+
 def _init(instance):
     env.instance = instance
     if not env.app:
@@ -75,7 +85,10 @@ def restart(command):
 
 def manage(command):
     with virtualenv():
-        run('python manage.py {command}'.format(command=command))
+        with shell_env(**generate_vars()):
+            run('python manage.py {command}'.format(
+                command=command
+            ))
 
 
 def setup_database_mysql():
