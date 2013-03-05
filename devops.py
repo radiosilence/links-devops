@@ -74,7 +74,7 @@ def restart(command):
 
 
 def manage(command):
-    with virtualenv:
+    with virtualenv():
         run('python manage.py {command}'.format(command=command))
 
 
