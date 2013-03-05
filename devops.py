@@ -9,6 +9,8 @@ from contextlib import contextmanager
 from fabric.api import *
 from fabric.contrib.console import confirm
 from fabric.colors import green
+from fabric.decorators import with_settings
+
 
 env.user = 'wsgi'
 env.hosts = ['linkscreative.co.uk:22734']
@@ -63,7 +65,7 @@ def generate_vars():
 def install_requirements():
     run('pip install -r requirements.txt')
 
-
+@with_settings(warn_only=True)
 def run_mysql(command):
     if not env.db_user:
         raise Exception('Control DB user not set!')
@@ -99,12 +101,12 @@ def create_var_file():
 def setup_database_mysql():
     user = "'{env.repo}_{env.instance}'@'localhost'".format(env=env)
     db = '{env.repo}_{env.instance}'.format(env=env)
-    with warn_only():
-        run_mysql('CREATE DATABASE IF NOT EXISTS {db};'.format(db=db))
-        run_mysql('DROP USER {user}'.format(user=user))
-        run_mysql("CREATE USER {user} IDENTIFIED BY '{password}';".format(
-            user=user, password=env.secrets['db']))
-        run_mysql('GRANT ALL on {db}.* TO {user};'.format(db=db, user=user))
+    
+    run_mysql('CREATE DATABASE IF NOT EXISTS {db};'.format(db=db))
+    run_mysql('DROP USER {user}'.format(user=user))
+    run_mysql("CREATE USER {user} IDENTIFIED BY '{password}';".format(
+        user=user, password=env.secrets['db']))
+    run_mysql('GRANT ALL on {db}.* TO {user};'.format(db=db, user=user))
 
 
 def setup_database():
