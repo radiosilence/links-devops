@@ -81,9 +81,8 @@ def restart(command):
 
 def manage(command):
     with virtualenv():
-        run('python manage.py {command} --settings={settings}'.format(
-            command=command,
-            settings=generate_vars()['DJANGO_SETTINGS_MODULE'],
+        run('python manage.py {command}'.format(
+            command=command
         ))
 
 
