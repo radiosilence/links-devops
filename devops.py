@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from fabric.api import *
 from fabric.contrib.console import confirm
 from fabric.contrib.files import exists
+from fabric.context_managers import warn_only
 from fabric.colors import green, red
 from fabric.decorators import with_settings
 
@@ -153,25 +154,32 @@ def initialise(instance, application='static'):
         raise Exception('Need some domains!')
 
     env.site = {
-        'instances': {
-            'name': env.instance,
-            'domains': env.domains,
-        },
+        'instances': [
+            {
+                'name': env.instance,
+                'domains': env.domains,
+            },
+        ],
         'configs': [
             {
                 'type': 'nginx',
                 'application': application,
-            }
+            },
         ],
     }
     conf_nginx()
     if application == 'django':
+        with warn_only():
+            manage('syncdb --noinput')
+            manage('collectstatic --noinput')
+
         env.site['configs'].append({
             'type': 'uwsgi',
             'application': 'django',
             'env': env.envvars
         })
         conf_uwsgi()
+        
 
     for k, v in env.envvars.items():
         print(green('{0}: "{1}"'.format(k, v.replace('"', '\"'))))
@@ -195,7 +203,7 @@ def conf_nginx():
     f.write(generate_config(
         env.repo,
         env.site,
-        env.instance,
+        filter(lambda x: x['name'] == env.instance, env.site['instances'])[0],
         filter(lambda x: x['type'] == 'nginx', env.site['configs'])[0],
         '.conf',
     ))
@@ -209,7 +217,7 @@ def conf_uwsgi():
     f.write(generate_config(
         env.repo,
         env.site,
-        env.instance,
+        filter(lambda x: x['name'] == env.instance, env.site['instances'])[0],
         filter(lambda x: x['type'] == 'uwsgi', env.site['configs'])[0],
         '.ini',
     ))
