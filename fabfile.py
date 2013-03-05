@@ -1,4 +1,3 @@
-import os
 from fabric.api import env
 from devops import initialise, upgrade
 
