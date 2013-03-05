@@ -7,6 +7,7 @@ import pipes
 
 from contextlib import contextmanager
 from fabric.api import *
+from fabric.contrib.console import confirm
 
 env.user = 'wsgi'
 env.hosts = ['linkscreative.co.uk:22734']
@@ -114,6 +115,9 @@ def setup_database():
 
 def initialise(instance):
     _init(instance)
+    if not confirm("Initialising a site will CHANGE THE DATABASE PASSWORD/SECRET KEY. Are you SURE you wish to continue?"):
+        return False
+
     env.secrets = {
         'db': _random(),
         'key': _random(64),
