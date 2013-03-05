@@ -8,6 +8,7 @@ import pipes
 from contextlib import contextmanager
 from fabric.api import *
 from fabric.contrib.console import confirm
+from fabric.colors import green
 
 env.user = 'wsgi'
 env.hosts = ['linkscreative.co.uk:22734']
@@ -98,7 +99,7 @@ def create_var_file():
 def setup_database_mysql():
     user = "'{env.repo}_{env.instance}'@'localhost'".format(env=env)
     db = '{env.repo}_{env.instance}'.format(env=env)
-    with settings(warn_only=True):
+    with warn_only():
         run_mysql('CREATE DATABASE IF NOT EXISTS {db};'.format(db=db))
         run_mysql('DROP USER {user}'.format(user=user))
         run_mysql("CREATE USER {user} IDENTIFIED BY '{password}';".format(
@@ -136,15 +137,16 @@ def initialise(instance):
                 run('git pull --rebase')
 
     with virtualenv():
-        run('pip install distribute -U')
+        run('pip install \'distribute>=0.6.35\'')
         run('pip install -r requirements.txt')
 
     for k, v in generate_vars().items():
-        print '{0}: "{1}"'.format(k, v.replace('"', '\"'))
+        print(green('{0}: "{1}"'.format(k, v.replace('"', '\"'))))
     
 
 def upgrade(instance):
     _init(instance)
+
     print(u'Updating {instance}'.format(instance=instance)) 
 
     local("git pull --rebase")
