@@ -76,7 +76,8 @@ def run_mysql(command):
 
 
 def restart():
-    run('touch {env.uwsgi_ini}'.format(env=env))
+    with virtualenv():
+        run('touch {env.uwsgi_ini}'.format(env=env))
 
 
 def manage(command):
