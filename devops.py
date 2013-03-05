@@ -91,7 +91,7 @@ def create_var_file():
     with cd(env.virtualenv):
         run('echo > bin/vars')
         for k, v in generate_vars().items():
-            run('echo \'export {0}={1}\' >> bin/vars'.format(k, pipes.quote(v)))
+            run('echo "export {0}={1}" >> bin/vars'.format(k, pipes.quote(v)))
 
 
 def setup_database_mysql():
