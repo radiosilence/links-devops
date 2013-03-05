@@ -4,7 +4,7 @@ import os
 import random
 import string
 
-from contextlib import contextmanager as _contextmanager
+from contextlib import contextmanager
 from fabric.api import *
 
 env.user = 'wsgi'
@@ -19,7 +19,7 @@ def _random(length=16):
                     for i
                     in range(0, length)])
 
-@_contextmanager
+@contextmanager
 def virtualenv():
     with cd(env.directory):
         with prefix(env.activate):
