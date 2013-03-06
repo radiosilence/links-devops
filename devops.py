@@ -199,7 +199,6 @@ def upgrade(instance):
     with virtualenv():
         run('git pull --rebase')
         run('pip install -r requirements.txt')
-        restart()
 
         if env.application == 'django':
             with warn_only():
@@ -207,6 +206,7 @@ def upgrade(instance):
                 manage('migrate --noinput')
                 manage('collectstatic --noinput')
 
+        restart()
 
 def shell(instance, *args, **kwargs):
     _init(instance)
