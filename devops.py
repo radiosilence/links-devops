@@ -85,6 +85,7 @@ def run_mysql(command):
 
 
 def restart():
+    puts(green('Restarting uWSGI instance...'))
     with virtualenv():
         run('touch {env.uwsgi_ini}'.format(env=env))
 
@@ -217,6 +218,7 @@ def conf_nginx():
     with virtualenv():
         put(f.name, 'nginx.conf')
     os.unlink(f.name)
+
 
 def conf_uwsgi():
     f = NamedTemporaryFile('w', delete=False)
