@@ -53,6 +53,8 @@ def _init(instance):
     env.activate = u'source {env.virtualenv}/bin/activate'.format(env=env)
     env.source_vars = u'source {env.virtualenv}/bin/vars'.format(env=env)
     env.uwsgi_ini = u'{env.directory}/uwsgi.ini'.format(env=env)
+    if not hasattr(env, 'application'):
+        env.application = 'static'
 
 
 def generate_envvars():
@@ -122,7 +124,7 @@ def setup_database():
         setup_database_mysql()
 
 
-def initialise(instance, application='static'):
+def initialise(instance):
     _init(instance)
     if not confirm(red('Initialising a site will CHANGE THE DATABASE PASSWORD/SECRET KEY. Are you SURE you wish to continue?'), default=False):
         exit()
@@ -164,12 +166,12 @@ def initialise(instance, application='static'):
         'configs': [
             {
                 'type': 'nginx',
-                'application': application,
+                'application': env.application,
             },
         ],
     }
     conf_nginx()
-    if application == 'django':
+    if env.application == 'django':
         with warn_only():
             manage('syncdb --noinput')
             manage('collectstatic --noinput')
