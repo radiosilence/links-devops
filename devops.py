@@ -196,6 +196,12 @@ def upgrade(instance):
     with virtualenv():
         run('git pull --rebase')
         run('pip install -r requirements.txt')
+        restart()
+
+
+def shell(instance, *args, **kwargs):
+    _init(instance)
+    manage('shell_plus')
 
 
 def conf_nginx():
