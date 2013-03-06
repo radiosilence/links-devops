@@ -201,6 +201,12 @@ def upgrade(instance):
         run('pip install -r requirements.txt')
         restart()
 
+        if env.application == 'django':
+            with warn_only():
+                manage('syncdb --noinput')
+                manage('migrate --noinput')
+                manage('collectstatic --noinput')
+
 
 def shell(instance, *args, **kwargs):
     _init(instance)
