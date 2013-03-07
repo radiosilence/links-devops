@@ -137,6 +137,7 @@ def initialise(instance):
     }
     run(u'mkdir -p {env.virtualenv}'.format(env=env))
     run(u'mkdir -p {}'.format(env.directory))
+    generate_envvars()
     
     if not exists(env.activate):
         run(u'virtualenv {env.virtualenv}'.format(env=env))
@@ -150,7 +151,6 @@ def initialise(instance):
             if result.failed:
                 run('git pull --rebase')
 
-    generate_envvars()
     with virtualenv():
         run('pip install -r requirements.txt')
     setup_database()
