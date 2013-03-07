@@ -140,10 +140,6 @@ def initialise(instance):
         run(u'virtualenv {env.virtualenv}'.format(env=env))
         with virtualenv():
             run('pip install \'distribute>=0.6.35\'')
-    generate_envvars()
-    setup_database()
-    create_var_file()
-    run(u'mkdir -p {}'.format(env.directory))
     with cd(env.directory):
         with settings(warn_only=True):
             result = run(u'git clone git@codebasehq.com:linkscreative/{env.project}/{env.repo}.git .'.format(
@@ -154,6 +150,11 @@ def initialise(instance):
 
     with virtualenv():
         run('pip install -r requirements.txt')
+    generate_envvars()
+    setup_database()
+    create_var_file()
+    run(u'mkdir -p {}'.format(env.directory))
+    
 
     if not hasattr(env, 'domains'):
         raise Exception('Need some domains!')
