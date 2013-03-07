@@ -54,6 +54,7 @@ def _init(instance):
     env.source_vars = u'source {env.virtualenv}/bin/vars'.format(env=env)
     env.uwsgi_ini = u'{env.directory}/uwsgi.ini'.format(env=env)
     if not hasattr(env, 'application'):
+        puts(red('env.application defaulting to "static"'))
         env.application = 'static'
 
 
