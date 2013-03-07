@@ -150,9 +150,9 @@ def initialise(instance):
             if result.failed:
                 run('git pull --rebase')
 
+    generate_envvars()
     with virtualenv():
         run('pip install -r requirements.txt')
-    generate_envvars()
     setup_database()
     create_var_file()
     
