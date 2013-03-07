@@ -183,6 +183,7 @@ def initialise(instance):
         env.site['configs'].append({
             'type': 'uwsgi',
             'application': 'django',
+            'app': env.app,
             'env': env.envvars
         })
         conf_uwsgi()
