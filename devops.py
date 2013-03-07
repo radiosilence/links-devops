@@ -136,13 +136,13 @@ def initialise(instance):
         'key': _random(64),
     }
     run(u'mkdir -p {env.virtualenv}'.format(env=env))
-    generate_envvars()
-    setup_database()
-    create_var_file()
     if not exists(env.activate):
         run(u'virtualenv {env.virtualenv}'.format(env=env))
         with virtualenv():
             run('pip install \'distribute>=0.6.35\'')
+    generate_envvars()
+    setup_database()
+    create_var_file()
     run(u'mkdir -p {}'.format(env.directory))
     with cd(env.directory):
         with settings(warn_only=True):
