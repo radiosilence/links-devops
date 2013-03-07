@@ -108,7 +108,8 @@ def create_var_file():
 
 
 def setup_database_mysql():
-    user = "'{env.repo}_{env.instance}'@'localhost'".format(env=env)
+    user = "'{repo_short}_{env.instance}'@'localhost'".format(env=env,
+        repo_short=env.repo[:11])
     db = '{env.repo}_{env.instance}'.format(env=env)
 
     run_mysql('CREATE DATABASE IF NOT EXISTS {db};'.format(db=db))
