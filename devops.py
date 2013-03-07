@@ -136,6 +136,8 @@ def initialise(instance):
         'key': _random(64),
     }
     run(u'mkdir -p {env.virtualenv}'.format(env=env))
+    run(u'mkdir -p {}'.format(env.directory))
+    
     if not exists(env.activate):
         run(u'virtualenv {env.virtualenv}'.format(env=env))
         with virtualenv():
@@ -153,7 +155,6 @@ def initialise(instance):
     generate_envvars()
     setup_database()
     create_var_file()
-    run(u'mkdir -p {}'.format(env.directory))
     
 
     if not hasattr(env, 'domains'):
