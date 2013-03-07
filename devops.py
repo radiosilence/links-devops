@@ -138,6 +138,7 @@ def initialise(instance):
     run(u'mkdir -p {env.virtualenv}'.format(env=env))
     run(u'mkdir -p {}'.format(env.directory))
     generate_envvars()
+    create_var_file()
     
     if not exists(env.activate):
         run(u'virtualenv {env.virtualenv}'.format(env=env))
@@ -154,7 +155,6 @@ def initialise(instance):
     with virtualenv():
         run('pip install -r requirements.txt')
     setup_database()
-    create_var_file()
     
 
     if not hasattr(env, 'domains'):
