@@ -140,7 +140,7 @@ def initialise(instance):
     if not exists(env.activate):
         run(u'virtualenv {env.virtualenv}'.format(env=env))
         with virtualenv():
-            run('pip install \'distribute>=0.6.3\'')
+            run('pip install \'distribute>=0.6.30\'')
     run(u'mkdir -p {}'.format(env.directory))
     with cd(env.directory):
         with settings(warn_only=True):
