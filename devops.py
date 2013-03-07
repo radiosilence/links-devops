@@ -135,10 +135,10 @@ def initialise(instance):
         'db': _random(),
         'key': _random(64),
     }
+    run(u'mkdir -p {env.virtualenv}'.format(env=env))
     generate_envvars()
     setup_database()
     create_var_file()
-    run(u'mkdir -p {env.virtualenv}'.format(env=env))
     if not exists(env.activate):
         run(u'virtualenv {env.virtualenv}'.format(env=env))
         with virtualenv():
