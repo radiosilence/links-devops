@@ -40,10 +40,10 @@ def virtualenv():
 
 def _init(instance):
     env.instance = instance
-    if not env.app:
-        raise Exception('APP not defined.')
     if not env.repo:
         raise Exception('REPO not defined.')
+    if not env.app:
+        raise Exception('APP not defined.')
     if not env.instance:
         raise Exception('Instance not defined.')
     if not env.project:
@@ -135,7 +135,7 @@ def initialise(instance):
         'db': _random(),
         'key': _random(64),
     }
-    run(u'mkdir -p {env.virtualenv}'.format(env=env))
+    run(u'mkdir -p {env.virtualenv}/bin'.format(env=env))
     run(u'mkdir -p {}'.format(env.directory))
     generate_envvars()
     create_var_file()
