@@ -76,7 +76,7 @@ def install_requirements():
             run('pip install -r requirements.{env.instance}.txt'.format(
                 env=env))
         elif exists('requirements.txt'):
-            run('pip install -r requirements.{env.instance}.txt'.format(
+            run('pip install -r requirements.txt'.format(
                 env=env))
         else:
             puts(red('Requirements file not found.'))
