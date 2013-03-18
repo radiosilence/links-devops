@@ -71,7 +71,16 @@ def generate_envvars():
 
 
 def install_requirements():
-    run('pip install -r requirements.txt')
+    with virtualenv():
+        if exists('requirements.{env.instance}.txt'):
+            run('pip install -r requirements.{env.instance}.txt'.format(
+                env=env))
+        elif exists('requirements.txt'):
+            run('pip install -r requirements.{env.instance}.txt'.format(
+                env=env))
+        else:
+            puts(red('Requirements file not found.'))
+
 
 @with_settings(warn_only=True)
 def run_mysql(command):
@@ -152,8 +161,7 @@ def initialise(instance):
             if result.failed:
                 run('git pull --rebase')
 
-    with virtualenv():
-        run('pip install -r requirements.txt')
+    install_requirements()
     setup_database()
     
 
@@ -203,7 +211,7 @@ def upgrade(instance):
 
     with virtualenv():
         run('git pull --rebase')
-        run('pip install -r requirements.txt')
+        install_requirements()
 
         if env.application == 'django':
             with warn_only():
