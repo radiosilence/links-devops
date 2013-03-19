@@ -121,7 +121,7 @@ def setup_database_mysql():
         repo_short=env.repo[:11])
     db = '{env.repo}_{env.instance}'.format(env=env)
 
-    run_mysql('CREATE DATABASE IF NOT EXISTS {db};'.format(db=db))
+    run_mysql('CREATE DATABASE IF NOT EXISTS {db} CHARACTER SET utf8 COLLATE utf8_general_ci;'.format(db=db))
     run_mysql('DROP USER {user}'.format(user=user))
     run_mysql("CREATE USER {user} IDENTIFIED BY '{password}';".format(
         user=user, password=env.secrets['db']))
