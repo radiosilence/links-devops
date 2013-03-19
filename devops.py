@@ -256,3 +256,6 @@ def conf_uwsgi():
     os.unlink(f.name)
 
 
+def celery():
+    local('source {env.activate}; source {env.source_vars}; python manage.py --settings={env.app}.settings.celery celery worker -B'.format(env))
+
