@@ -262,4 +262,4 @@ def conf_uwsgi():
 
 def celery(instance):
     _init(instance)
-    local('source {env.activate}; source {env.source_vars}; python manage.py --settings={env.app}.settings.celery_{env.settings_variant} celery worker -B'.format(env=env))
+    local('python manage.py --settings={env.app}.settings.celery_{env.settings_variant} celery worker -B'.format(env=env))
