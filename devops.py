@@ -262,4 +262,4 @@ def conf_uwsgi():
 
 def celery(instance):
     _init(instance)
-    local('python manage.py --settings={env.app}.settings.celery_{env.settings_variant} celery worker -B'.format(env=env))
+    local('DJANGO_SETTINGS_MODULE={env.app}.settings.celery_{env.settings_variant} python manage.py celery worker -B'.format(env=env))
