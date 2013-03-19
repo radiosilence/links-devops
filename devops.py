@@ -53,6 +53,12 @@ def _init(instance):
     env.activate = u'source {env.virtualenv}/bin/activate'.format(env=env)
     env.source_vars = u'source {env.virtualenv}/bin/vars'.format(env=env)
     env.uwsgi_ini = u'{env.directory}/uwsgi.ini'.format(env=env)
+    if env.instance == 'live':
+        env.settings_variant = 'production'
+    elif env.instance == 'test':
+        env.settings_variant = 'development'
+    else:
+        env.settings_variant = 'instance'
     if not hasattr(env, 'application'):
         puts(red('env.application defaulting to "static"'))
         env.application = 'static'
@@ -60,12 +66,10 @@ def _init(instance):
 
 def generate_envvars():
     variables = {
-        'DJANGO_SETTINGS_MODULE': u'{env.app}.settings.production'.format(env=env),
+        'DJANGO_SETTINGS_MODULE': u'{env.app}.settings.{env.settings_variant}'.format(env=env),
         'DJANGO_DB_PASSWORD': env.secrets['db'],
         'DJANGO_SECRET_KEY': env.secrets['key'],
     }
-    if env.instance == 'test':
-        variables['DJANGO_SETTINGS_MODULE'] = u'{env.app}.settings.development'.format(env=env)
     env.envvars = variables
     
 
@@ -256,6 +260,6 @@ def conf_uwsgi():
     os.unlink(f.name)
 
 
-def celery():
-    local('source {env.activate}; source {env.source_vars}; python manage.py --settings={env.app}.settings.celery celery worker -B'.format(env=env))
-
+def celery(instance):
+    _init(instance)
+    local('source {env.activate}; source {env.source_vars}; python manage.py --settings={env.app}.settings.celery_{env.settings_variant} celery worker -B'.format(env=env))
