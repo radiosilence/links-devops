@@ -58,7 +58,7 @@ def _init(instance):
     elif env.instance == 'test':
         env.settings_variant = 'development'
     else:
-        env.settings_variant = 'instance'
+        env.settings_variant = instance
     if not hasattr(env, 'application'):
         puts(red('env.application defaulting to "static"'))
         env.application = 'static'
