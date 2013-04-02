@@ -14,8 +14,8 @@ for dep in open('requirements.txt').read().split("\n"):
 
 
 setup(
-    name="Links Creative DevOps",
-    version="0.1",
+    name="links-devops",
+    version="0.1.2",
     description="Fabric deployment script.",
     author=u"James Cleveland",
     author_email="james@dapperdogstudios.com",
