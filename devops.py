@@ -25,6 +25,13 @@ env.db_password = os.environ.get('DB_PASSWORD')
 env.db_host = os.environ.get('DB_HOST') or 'localhost'
 
 
+def debug():
+    local('python manage.py runserver {host}:{port}'.format(
+        host=os.environ.get('DJANGO_DEBUG_HOST', '0.0.0.0'),
+        port=os.environ.get('DJANGO_DEBUG_PORT', env.port)
+    ))
+
+
 def _random(length=16):
     return ''.join([random.choice(string.digits + string.letters + u'!-_:;.,^&')
                     for i
