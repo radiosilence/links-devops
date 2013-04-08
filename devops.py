@@ -194,9 +194,9 @@ def initialise(instance):
         'application': env.application,
     }
     if env.application == 'django':
-        from django.conf import settings
-        nginx_config['media_url'] = settings.MEDIA_URL
-        nginx_config['static_url'] = settings.STATIC_URL
+        from django.conf import settings as djsettings
+        nginx_config['media_url'] = djsettings.MEDIA_URL
+        nginx_config['static_url'] = djsettings.STATIC_URL
 
     env.site = {
         'instances': [
