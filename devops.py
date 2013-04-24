@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import with_statement
 import os
+import sys
 import random
 import string
 import pipes
@@ -14,6 +15,7 @@ from fabric.contrib.console import confirm
 from fabric.contrib.files import exists
 from fabric.context_managers import warn_only
 from fabric.colors import green, red
+from fabric.contrib import django
 from fabric.decorators import with_settings
 
 
@@ -23,6 +25,8 @@ env.db_adapter = 'mysql'
 env.db_user = os.environ.get('DB_USER') or 'root'
 env.db_password = os.environ.get('DB_PASSWORD')
 env.db_host = os.environ.get('DB_HOST') or 'localhost'
+
+CWD = sys.path[0]
 
 
 def debug():
@@ -46,6 +50,7 @@ def virtualenv():
 
 
 def _init(instance):
+    sys.path.insert(0, CWD)
     env.instance = instance
     if not env.repo:
         raise Exception('REPO not defined.')
@@ -60,6 +65,7 @@ def _init(instance):
     env.activate = u'source {env.virtualenv}/bin/activate'.format(env=env)
     env.source_vars = u'source {env.virtualenv}/bin/vars'.format(env=env)
     env.uwsgi_ini = u'{env.directory}/uwsgi.ini'.format(env=env)
+
     if env.instance == 'live':
         env.settings_variant = 'production'
     elif env.instance == 'test':
@@ -69,6 +75,10 @@ def _init(instance):
     if not hasattr(env, 'application'):
         puts(red('env.application defaulting to "static"'))
         env.application = 'static'
+
+    if env.application == 'django':
+        django.settings_module('{env.app}.settings.{env.settings_variant}'.format(
+            env=env))
 
 
 def generate_envvars():
@@ -179,6 +189,15 @@ def initialise(instance):
     if not hasattr(env, 'domains'):
         raise Exception('Need some domains!')
 
+    nginx_config = {
+        'type': 'nginx',
+        'application': env.application,
+    }
+    if env.application == 'django':
+        from django.conf import settings as djsettings
+        nginx_config['media_url'] = djsettings.MEDIA_URL
+        nginx_config['static_url'] = djsettings.STATIC_URL
+
     env.site = {
         'instances': [
             {
@@ -187,10 +206,7 @@ def initialise(instance):
             },
         ],
         'configs': [
-            {
-                'type': 'nginx',
-                'application': env.application,
-            },
+            nginx_config,
         ],
     }
     conf_nginx()

@@ -20,7 +20,7 @@ setup(
     author=u"James Cleveland",
     author_email="james@dapperdogstudios.com",
     url="https://linkscreative.codebasehq.com/projects/links-creative/repositories/devops",
-    packages=find_packages(),
+    py_modules=['devops'],
     include_package_data=True,
     install_requires=requires,
     dependency_links=dep_links,
