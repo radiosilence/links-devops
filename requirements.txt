@@ -1,1 +1,1 @@
--e git+git://github.com/radiosilence/devops.git#egg=devops
+dapper-devops>=0.1.6
