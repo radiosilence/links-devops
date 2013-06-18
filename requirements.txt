@@ -1,1 +1,1 @@
--e git+https://github.com/radiosilence/devops.git#egg=devops
+-e git+git://github.com/radiosilence/devops.git#egg=devops
