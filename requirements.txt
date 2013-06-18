@@ -1,2 +1,1 @@
-Fabric>=1.6.0
-servers.py>=0.1.4
+-e git+https://github.com/radiosilence/devops.git#egg=devops
