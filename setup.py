@@ -7,7 +7,7 @@ requires = []
 dep_links = []
 
 for dep in open('requirements.txt').read().split("\n"):
-    if dep.startswith('git+'):
+    if dep.startswith('git+') or dep.startswith('-e'):
         dep_links.append(dep)
     else:
         requires.append(dep)
