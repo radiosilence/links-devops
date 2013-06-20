@@ -15,12 +15,12 @@ for dep in open('requirements.txt').read().split("\n"):
 
 setup(
     name="links-devops",
-    version="0.1.6",
+    version="0.1.7",
     description="Fabric deployment script.",
     author=u"James Cleveland",
     author_email="james@dapperdogstudios.com",
     url="https://linkscreative.codebasehq.com/projects/links-creative/repositories/devops",
-    py_modules=['links-devops'],
+    py_modules=['links_devops'],
     include_package_data=True,
     install_requires=requires,
     dependency_links=dep_links,
